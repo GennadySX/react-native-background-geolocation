@@ -1,0 +1,84 @@
+buildscript {
+    if (project == rootProject) {
+        repositories {
+            google()
+            mavenCentral()
+            maven { url "https://jitpack.io"  }
+            jcenter()
+            maven {
+                url 'https://maven.google.com/'
+                name 'Google'
+            }
+        }
+
+        dependencies {
+            classpath 'com.android.tools.build:gradle:4.2.0'
+        }
+    }
+}
+
+
+apply plugin: 'com.android.library'
+
+def hasApp = findProject(':app') != null
+
+repositories {
+    // unfortunately this is ignored when installing as react-native plugin
+    maven {
+        url 'https://maven.google.com'
+    }
+    mavenLocal()
+    maven {
+        // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+        url("$rootDir/../node_modules/react-native/android")
+    }
+    google()
+    mavenCentral()
+    maven { url "https://jitpack.io"  }
+    jcenter()
+}
+
+
+def safeExtGet(prop, fallback) {
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
+android {
+    compileSdkVersion safeExtGet('BgGeolocation_compileSdkVersion', 30)
+    defaultConfig {
+        minSdkVersion safeExtGet('BgGeolocation_minSdkVersion', 21)
+        targetSdkVersion safeExtGet('BgGeolocation_targetSdkVersion', 30)
+        versionCode 2
+        versionName "1.0.1"
+
+    }
+    if (hasApp) {
+
+        evaluationDependsOn(':app')
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    lintOptions {
+        disable 'GradleCompatible'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+}
+
+dependencies {
+    implementation "com.facebook.react:react-native:+"
+    implementation 'com.github.GennadySX:android-background-location:1.0.1'
+
+
+}
